@@ -211,7 +211,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const footerFilterLinks = document.querySelectorAll('[data-footer-filter]');
 
-    let visibleLimit = 6;
+    // Get responsive batch size (4 for mobile, 6 for desktop)
+    function getBatchSize() {
+        return window.innerWidth <= 900 ? 4 : 6;
+    }
+
+    let visibleLimit = getBatchSize();
     const seeMoreBtn = document.getElementById('seeMoreBtn');
     const seeMoreContainer = document.getElementById('seeMoreContainer');
 
@@ -364,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             const filterValue = button.getAttribute('data-filter');
-            visibleLimit = 6; // Reset page size limit on filter change
+            visibleLimit = getBatchSize(); // Reset page size limit on filter change
             filterPortfolio(filterValue);
         });
     });
@@ -374,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const filterValue = link.getAttribute('data-footer-filter');
-            visibleLimit = 6; // Reset page size limit on filter change
+            visibleLimit = getBatchSize(); // Reset page size limit on filter change
             filterPortfolio(filterValue);
 
             const portfolioSection = document.getElementById('portfolio');
@@ -387,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // See More click event handler
     if (seeMoreBtn) {
         seeMoreBtn.addEventListener('click', () => {
-            visibleLimit += 6; // Load next batch of 6 items
+            visibleLimit += getBatchSize(); // Load next batch of 4 or 6 items
             
             // Get active category filter
             const activeFilterBtn = Array.from(filterButtons).find(btn => btn.classList.contains('active'));
@@ -411,7 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupLightboxCardListeners() {
         const cards = document.querySelectorAll('.portfolio-card');
         cards.forEach((card) => {
-            card.addEventListener('click', () => {
+            let touchHandled = false;
+
+            const triggerOpen = (e) => {
                 // Gather only items currently visible based on active filter
                 activeItems = Array.from(portfolioItems).filter(item => item.style.display !== 'none');
 
@@ -420,7 +427,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentIdx = activeItems.indexOf(parentItem);
 
                 openLightbox(activeItems[currentIdx]);
+            };
+
+            card.addEventListener('click', (e) => {
+                if (touchHandled) {
+                    touchHandled = false;
+                    return;
+                }
+                triggerOpen(e);
             });
+
+            card.addEventListener('touchend', (e) => {
+                touchHandled = true;
+                // Prevent ghost click that mobile browsers fire 300ms later
+                e.preventDefault();
+                triggerOpen(e);
+            }, { passive: false });
         });
     }
 
