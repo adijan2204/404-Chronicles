@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const bufferSize = ctx.sampleRate * 0.15; // 0.15s duration
             const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const data = buffer.getChannelData(0);
-            
+
             for (let i = 0; i < bufferSize; i++) {
                 data[i] = Math.random() * 2 - 1;
             }
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. High-pitched metallic shutter "tick" (oscillator click sweep)
             const osc = ctx.createOscillator();
             const oscGain = ctx.createGain();
-            
+
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(2000, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.05);
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             noiseNode.start();
             osc.start();
-            
+
             noiseNode.stop(ctx.currentTime + 0.15);
             osc.stop(ctx.currentTime + 0.05);
         } catch (e) {
@@ -74,21 +74,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPct >= 100) {
             currentPct = 100;
             clearInterval(interval);
-            
+
             // Reached 100%, trigger auto camera click
             setTimeout(() => {
                 // Play Web Audio camera shutter tick sound
                 // playShutterSound();
-                
+
                 // Fire camera flash animation
                 if (shutterFlash) {
                     shutterFlash.classList.add('flash-trigger');
                 }
-                
+
                 // Fade out progress elements instantly during flash
                 if (preloaderLineWrap) preloaderLineWrap.style.opacity = '0';
                 if (preloaderCounterWrap) preloaderCounterWrap.style.opacity = '0';
-                
+
                 // Slide preloader out after flash peak duration (200ms)
                 setTimeout(() => {
                     if (preloader) {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Scroll Reveal Intersection Observer
     const elementsToReveal = document.querySelectorAll('section, .section-title, .about-image-wrapper, .gear-card, .pricing-card, .testimonial-card, .booking-form-wrapper');
     elementsToReveal.forEach(el => el.classList.add('reveal'));
-    
+
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
-        
+
         if (scrollProgress) {
             scrollProgress.style.width = scrolled + '%';
         }
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
        3. INTERSECTION OBSERVER FOR ACTIVE NAVIGATION LINKS
        ========================================================================== */
     const sections = document.querySelectorAll('section');
-    
+
     const observerOptions = {
         root: null,
         rootMargin: '-20% 0px -60% 0px', // Trigger when section occupies sweet spot of screen
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const filterValue = link.getAttribute('data-footer-filter');
             filterPortfolio(filterValue);
-            
+
             const portfolioSection = document.getElementById('portfolio');
             if (portfolioSection) {
                 portfolioSection.scrollIntoView({ behavior: 'smooth' });
@@ -280,14 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
     triggers.forEach((trigger) => {
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            
+
             // Gather only items currently visible based on active filter
             activeItems = Array.from(portfolioItems).filter(item => item.style.display !== 'none');
-            
+
             // Find parent item clicked
             const parentItem = trigger.closest('.portfolio-item');
             currentIdx = activeItems.indexOf(parentItem);
-            
+
             openLightbox(activeItems[currentIdx]);
         });
     });
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         lightboxModal.style.display = 'flex';
         lightboxModal.setAttribute('aria-hidden', 'false');
-        
+
         // Wait for next layout pass to apply opacity fade in transition
         setTimeout(() => {
             lightboxModal.classList.add('active');
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeLightbox() {
         lightboxModal.classList.remove('active');
         lightboxModal.setAttribute('aria-hidden', 'true');
-        
+
         setTimeout(() => {
             lightboxModal.style.display = 'none';
         }, 400); // Match CSS transition duration
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Keyboard Controls
         document.addEventListener('keydown', (e) => {
             if (!lightboxModal.classList.contains('active')) return;
-            
+
             if (e.key === 'Escape') {
                 closeLightbox();
             } else if (e.key === 'ArrowRight') {
@@ -374,11 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const packageName = btn.getAttribute('data-package');
-            
+
             if (packageSelectDropdown) {
                 packageSelectDropdown.value = packageName;
                 validateField(packageSelectDropdown, true);
-                
+
                 // Trigger outline highlight animation
                 packageSelectDropdown.focus();
                 packageSelectDropdown.classList.add('highlight-flash');
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching global booked slots:', error);
             globalBookedSlots = JSON.parse(localStorage.getItem('global_booked_slots') || '[]');
         }
-        
+
         // Refresh disabled time slots if date is selected
         if (bookingDateInput && bookingDateInput.value) {
             updateDisabledTimeSlots(bookingDateInput.value);
@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let calendarDate = new Date();
     let selectedDate = null; // No default selected date
-    
+
     // Keep inputs unpopulated on startup
     if (bookingDateInput) {
         bookingDateInput.value = "";
@@ -465,7 +465,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (calendarTrigger && calendarPopup) {
         calendarTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            dateInputWrapper.classList.toggle('active');
+            const isActive = dateInputWrapper.classList.toggle('active');
+            if (isActive) {
+                fetchGlobalBookedSlots();
+            }
         });
 
         // Close calendar popup if clicking outside
@@ -480,22 +483,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!calendarDaysGrid || !currentMonthYearHeader) return;
 
         calendarDaysGrid.innerHTML = '';
-        
+
         const year = calendarDate.getFullYear();
         const month = calendarDate.getMonth();
-        
+
         // Month name & Year header text
         currentMonthYearHeader.textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        
+
         // Find first day of the month & total days
         const firstDayIndex = new Date(year, month, 1).getDay();
         const totalDays = new Date(year, month + 1, 0).getDate();
-        
-        // Today & Minimum selectable date (tomorrow)
+
+        // Today & Minimum selectable date (today)
         const today = new Date();
-        today.setHours(0,0,0,0);
+        today.setHours(0, 0, 0, 0);
         const minSelectableDate = new Date(today);
-        minSelectableDate.setDate(minSelectableDate.getDate() + 1);
 
         // Add empty pads for calendar alignment
         for (let i = 0; i < firstDayIndex; i++) {
@@ -509,15 +511,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const dayCell = document.createElement('div');
             dayCell.className = 'calendar-day';
             dayCell.textContent = day;
-            
+
             const cellDate = new Date(year, month, day);
-            cellDate.setHours(0,0,0,0);
-            
+            cellDate.setHours(0, 0, 0, 0);
+
             // Check if cell represents selected date
             if (selectedDate && cellDate.getTime() === selectedDate.getTime()) {
                 dayCell.classList.add('selected');
             }
-            
+
             // Check if cell is today
             if (cellDate.getTime() === today.getTime()) {
                 dayCell.classList.add('today');
@@ -530,20 +532,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayCell.addEventListener('click', (e) => {
                     e.stopPropagation();
                     selectedDate = cellDate;
-                    
+
                     // Update hidden native date input value for forms
                     bookingDateInput.value = getLocalDateString(cellDate);
-                    
+
                     // Trigger native change validation event
                     const event = new Event('change');
                     bookingDateInput.dispatchEvent(event);
-                    
+
                     // Update UI trigger label
                     selectedDateText.textContent = cellDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                    
+
                     // Close popup
                     dateInputWrapper.classList.remove('active');
-                    
+
                     // Rerender cells to update selected state
                     renderCalendar();
                 });
@@ -571,19 +573,47 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateDisabledTimeSlots(dateString) {
         if (!dateString) return;
         const localBookedSlots = JSON.parse(localStorage.getItem('booked_slots') || '[]');
+
+        // Get today's local date string for time checks
+        const today = new Date();
+        const todayString = getLocalDateString(today);
+        const currentHours = today.getHours();
+        const currentMinutes = today.getMinutes();
+
         timeSlots.forEach(slot => {
             const time = slot.getAttribute('data-time');
             const slotKey = `${dateString}_${time}`;
             const safeSlotKey = slotKey.replace(/:/g, '-').replace(/ /g, '_');
-            
-            if (localBookedSlots.includes(slotKey) || globalBookedSlots.includes(safeSlotKey)) {
+
+            // Check if this slot time has already passed today
+            let isPastSlot = false;
+            if (dateString === todayString) {
+                let slotHours = 0;
+                let slotMinutes = 0;
+                if (time === "09:00 AM") {
+                    slotHours = 9;
+                    slotMinutes = 0;
+                } else if (time === "02:00 PM") {
+                    slotHours = 14;
+                    slotMinutes = 0;
+                } else if (time === "05:30 PM") {
+                    slotHours = 17;
+                    slotMinutes = 30;
+                }
+
+                if (currentHours > slotHours || (currentHours === slotHours && currentMinutes >= slotMinutes)) {
+                    isPastSlot = true;
+                }
+            }
+
+            if (localBookedSlots.includes(slotKey) || globalBookedSlots.includes(safeSlotKey) || isPastSlot) {
                 slot.classList.add('booked');
                 slot.classList.remove('active');
             } else {
                 slot.classList.remove('booked');
             }
         });
-        
+
         // If a time slot was already selected but became booked, select the first available slot
         if (selectedTimeSlot) {
             const currentActiveSlot = Array.from(timeSlots).find(s => s.classList.contains('active'));
@@ -615,7 +645,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     timeSlots.forEach(slot => {
         slot.addEventListener('click', () => {
-            if (slot.classList.contains('booked')) return;
+            if (slot.classList.contains('booked')) {
+                showToast("This slot is already booked or unavailable!");
+                return;
+            }
             timeSlots.forEach(s => s.classList.remove('active'));
             slot.classList.add('active');
             selectedTimeSlot = slot.getAttribute('data-time');
@@ -630,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderNext = document.getElementById('sliderNext');
     const sliderDotsContainer = document.getElementById('sliderDots');
     const slides = document.querySelectorAll('.testimonial-slide');
-    
+
     let currentSlide = 0;
     const totalSlides = slides.length;
     let autoPlayTimer;
@@ -724,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
        ========================================================================== */
     const bookingForm = document.getElementById('bookingForm');
     const submitBtn = document.getElementById('submitBookingBtn');
-    
+
     // Toast Elements
     const toast = document.getElementById('toastNotification');
     const toastClose = document.getElementById('toastClose');
@@ -748,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!toast) return;
         toastMessage.textContent = message;
         toast.classList.add('active');
-        
+
         // Auto dismiss after 6 seconds
         setTimeout(() => {
             toast.classList.remove('active');
@@ -780,10 +813,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        bookingDateInput.addEventListener('change', () => {
+        bookingDateInput.addEventListener('change', async () => {
             const dateVal = bookingDateInput.value;
             validateField(bookingDateInput, dateVal !== "");
             if (dateVal) {
+                await fetchGlobalBookedSlots();
                 updateDisabledTimeSlots(dateVal);
             }
         });
@@ -791,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Form Submit
         bookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const isNameValid = fullNameInput.value.trim() !== "";
             const isEmailValid = emailPattern.test(emailInput.value.trim());
             const isDateValid = bookingDateInput.value !== "";
@@ -819,11 +853,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const chosenDate = bookingDateInput.value;
             const slotKey = `${chosenDate}_${selectedTimeSlot}`;
             const safeSlotKey = slotKey.replace(/:/g, '-').replace(/ /g, '_');
-            
+
             const localBookedSlots = JSON.parse(localStorage.getItem('booked_slots') || '[]');
             if (localBookedSlots.includes(slotKey) || globalBookedSlots.includes(safeSlotKey)) {
                 showToast("This date and time slot is already booked!");
                 return;
+            }
+
+            // Halt if the selected slot is in the past
+            const today = new Date();
+            const todayString = getLocalDateString(today);
+            if (chosenDate === todayString) {
+                const currentHours = today.getHours();
+                const currentMinutes = today.getMinutes();
+                let slotHours = 0;
+                let slotMinutes = 0;
+                if (selectedTimeSlot === "09:00 AM") {
+                    slotHours = 9;
+                    slotMinutes = 0;
+                } else if (selectedTimeSlot === "02:00 PM") {
+                    slotHours = 14;
+                    slotMinutes = 0;
+                } else if (selectedTimeSlot === "05:30 PM") {
+                    slotHours = 17;
+                    slotMinutes = 30;
+                }
+                if (currentHours > slotHours || (currentHours === slotHours && currentMinutes >= slotMinutes)) {
+                    showToast("This time slot has already passed today. Please select a future slot.");
+                    return;
+                }
             }
 
             // Fire Luxury Loading Animation on button
@@ -840,7 +898,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         latestSlots = data.split(',').filter(Boolean);
                     }
                 }
-                
+
                 // If already booked by someone else in the meantime
                 if (latestSlots.includes(safeSlotKey)) {
                     showToast("This slot was just booked by another client! Please choose another time.");
@@ -850,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateDisabledTimeSlots(chosenDate);
                     return;
                 }
-                
+
                 // Book the slot
                 latestSlots.push(safeSlotKey);
                 const updatedData = latestSlots.join(',');
@@ -858,7 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'POST',
                     headers: { 'Content-Length': '0' }
                 });
-                
+
                 if (updateResponse.ok) {
                     globalBookedSlots = latestSlots;
                 }
@@ -869,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
-                
+
                 // Form values
                 const name = fullNameInput.value.trim();
                 const email = emailInput.value.trim();
@@ -882,10 +940,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentBookedSlots.push(slotKey);
                 }
                 localStorage.setItem('booked_slots', JSON.stringify(currentBookedSlots));
-                
+
                 // Format WhatsApp API redirect URL
                 const waNumber = "7499032210";
-                let waMessage = `Hello Aditya! I would like to book a photography session with 404 Chronicles.\n\n`;
+                let waMessage = `Hello 404 Chronicles  ! I would like to book a photography session with 404 Chronicles.\n\n`;
                 waMessage += `*Booking Details:*\n`;
                 waMessage += `- *Name:* ${name}\n`;
                 waMessage += `- *Email:* ${email}\n`;
@@ -896,12 +954,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     waMessage += `- *Creative Brief:* ${creativeBrief}\n`;
                 }
                 waMessage += `\nLooking forward to capturing the moment!`;
-                
+
                 const waUrl = `https://wa.me/91${waNumber}?text=${encodeURIComponent(waMessage)}`;
 
                 // Success Message
                 const successMsg = `Please send the info on WhatsApp to complete your booking.`;
-                
+
                 showToast(successMsg);
 
                 // Open WhatsApp in a new tab
@@ -912,24 +970,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset form
                 bookingForm.reset();
                 timeSlots.forEach(s => s.classList.remove('active'));
-                const defaultSlot = document.querySelector('.time-slot-btn[data-time="02:00 PM"]');
-                if (defaultSlot) defaultSlot.classList.add('active');
-                selectedTimeSlot = "02:00 PM";
-                
+                selectedTimeSlot = "";
+
                 // Reset Visual Calendar trigger text
                 if (selectedDateText) {
-                    const tomorrowDate = new Date();
-                    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-                    selectedDate = tomorrowDate;
+                    selectedDate = null;
                     calendarDate = new Date();
-                    bookingDateInput.value = getLocalDateString(tomorrowDate);
-                    selectedDateText.textContent = tomorrowDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    bookingDateInput.value = "";
+                    selectedDateText.textContent = "Select Date...";
                     renderCalendar();
                 }
-                
+
                 // Refresh slots display
                 updateDisabledTimeSlots(bookingDateInput.value);
-                
+
             }, 1000);
         });
     }
@@ -943,14 +997,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
+
             const isEmailValid = emailPattern.test(newsletterEmail.value.trim());
-            
+
             if (isEmailValid) {
                 newsletterForm.classList.add('submitted');
                 newsletterEmail.value = '';
                 newsletterEmail.disabled = true;
-                
+
                 // Reset after 4 seconds
                 setTimeout(() => {
                     newsletterForm.classList.remove('submitted');
