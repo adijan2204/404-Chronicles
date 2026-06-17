@@ -1,0 +1,58 @@
+[
+  {
+    "src": "assets/portfolio/landscape/Whispers of the Forest.jpg",
+    "category": "landscape",
+    "title": "Whispers of the Forest",
+    "camera": "Canon 5D Mark IV",
+    "lens": "RF 50mm",
+    "aperture": "f/1.8"
+  },
+  {
+    "src": "assets/portfolio/portrait/DA165EA1-C40C-44DD-AF14-C9EFD5587AB0_1_201_a.jpeg",
+    "category": "portrait",
+    "title": "DA165EA1 C40C 44DD AF14 C9EFD5587AB0 1 201 a",
+    "camera": "Canon 5D Mark IV",
+    "lens": "RF 50mm",
+    "aperture": "f/1.8"
+  },
+  {
+    "src": "assets/portfolio/street/portfolio_street 2.jpeg",
+    "category": "street",
+    "title": "portfolio street 2",
+    "camera": "Canon 5D Mark IV",
+    "lens": "24-105mm",
+    "aperture": "f/4.0"
+  },
+  {
+    "src": "assets/portfolio/street/portfolio_street 3.jpeg",
+    "category": "street",
+    "title": "portfolio street 3",
+    "camera": "Canon 5D Mark IV",
+    "lens": "24-105mm",
+    "aperture": "f/4.0"
+  },
+  {
+    "src": "assets/portfolio/street/portfolio_street 4.jpeg",
+    "category": "street",
+    "title": "portfolio street 4",
+    "camera": "Canon 5D Mark IV",
+    "lens": "24-105mm",
+    "aperture": "f/4.0"
+  },
+  {
+    "src": "assets/portfolio/street/portfolio_street 5.jpeg",
+    "category": "street",
+    "title": "portfolio street 5",
+    "camera": "Canon 5D Mark IV",
+    "lens": "24-105mm",
+    "aperture": "f/4.0"
+  },
+  {
+    "src": "assets/portfolio/street/portfolio_street.jpeg",
+    "category": "street",
+    "title": "portfolio street",
+    "camera": "Canon 5D Mark IV",
+    "lens": "24-105mm",
+    "aperture": "f/4.0"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "name": "404-chronicles",
+  "version": "1.0.0",
+  "description": "Fine Art Photography Portfolio",
+  "type": "module",
+  "scripts": {
+    "sync": "node sync.js",
+    "watch": "node sync.js --watch"
+  }
+}

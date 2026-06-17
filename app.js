@@ -205,27 +205,128 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================================
-       4. PORTFOLIO FILTERABLE GRID
+       4. PORTFOLIO DYNAMIC LOADING & FILTERABLE GRID
        ========================================================================== */
+    const portfolioGrid = document.getElementById('portfolioGrid');
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
     const footerFilterLinks = document.querySelectorAll('[data-footer-filter]');
 
+    let visibleLimit = 6;
+    const seeMoreBtn = document.getElementById('seeMoreBtn');
+    const seeMoreContainer = document.getElementById('seeMoreContainer');
+
+    let portfolioItems = []; // Will be populated dynamically after render
+    let activeItems = [];    // Contains current visible portfolio items
+    let currentIdx = 0;      // Index of current image in activeItems
+
+    // Capitalize category names for display
+    function formatCategoryName(category) {
+        if (!category) return '';
+        if (category.toLowerCase() === 'street') return 'Street Art';
+        return category.charAt(0).toUpperCase() + category.slice(1);
+    }
+
+    async function loadPortfolio() {
+        try {
+            // First check if global window.portfolioData is available (CORS-safe / instant)
+            if (window.portfolioData && Array.isArray(window.portfolioData)) {
+                renderPortfolio(window.portfolioData);
+                return;
+            }
+            // Fallback to fetch
+            const response = await fetch('assets/portfolio-data.js');
+            if (!response.ok) {
+                throw new Error('Failed to load portfolio database');
+            }
+            const text = await response.text();
+            const jsonStart = text.indexOf('[');
+            const jsonEnd = text.lastIndexOf(']') + 1;
+            const data = JSON.parse(text.slice(jsonStart, jsonEnd));
+            renderPortfolio(data);
+        } catch (error) {
+            console.error('Error loading portfolio:', error);
+        }
+    }
+
+    function renderPortfolio(items) {
+        if (!portfolioGrid) return;
+        
+        portfolioGrid.innerHTML = ''; // Clear existing items
+
+        items.forEach(item => {
+            const itemHTML = `
+                <div class="portfolio-item" data-category="${item.category}">
+                    <div class="portfolio-card">
+                        <img src="${item.src}" alt="${item.title}" class="portfolio-img">
+                        <div class="portfolio-overlay">
+                            <span class="portfolio-cat uppercase-tracking">${formatCategoryName(item.category)}</span>
+                            <h3 class="portfolio-item-title">${item.title}</h3>
+                            <div class="portfolio-exif">
+                                <span><i class="fa-solid fa-camera"></i> ${item.camera}</span>
+                                <span><i class="fa-solid fa-circle-dot"></i> ${item.lens}</span>
+                                <span><i class="fa-solid fa-bolt"></i> ${item.aperture}</span>
+                            </div>
+                            <button class="btn-lightbox-trigger" aria-label="Open Lightbox">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            portfolioGrid.insertAdjacentHTML('beforeend', itemHTML);
+        });
+
+        // Re-query newly created portfolio item elements
+        portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        // Re-setup lightbox trigger listeners on cards
+        setupLightboxCardListeners();
+
+        // Run initial filter display
+        filterPortfolio('all');
+    }
+
     function filterPortfolio(filterValue) {
+        let shownCount = 0;
         portfolioItems.forEach(item => {
             const category = item.getAttribute('data-category');
-            if (filterValue === 'all' || category === filterValue) {
-                item.style.display = 'block';
-                // Trigger reflow for CSS scale and fade animations
-                setTimeout(() => {
-                    item.classList.add('show');
-                }, 50);
+            if (filterValue === 'all') {
+                if (shownCount < visibleLimit) {
+                    item.style.display = 'block';
+                    // Trigger reflow
+                    item.offsetHeight;
+                    setTimeout(() => {
+                        item.classList.add('show');
+                    }, 50);
+                    shownCount++;
+                } else {
+                    item.classList.remove('show');
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 500);
+                }
             } else {
-                item.classList.remove('show');
-                // Wait for CSS scale/fade animations before hiding from DOM layout
-                setTimeout(() => {
-                    item.style.display = 'none';
-                }, 500);
+                if (category === filterValue) {
+                    if (shownCount < visibleLimit) {
+                        item.style.display = 'block';
+                        // Trigger reflow
+                        item.offsetHeight;
+                        setTimeout(() => {
+                            item.classList.add('show');
+                        }, 50);
+                        shownCount++;
+                    } else {
+                        item.classList.remove('show');
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 500);
+                    }
+                } else {
+                    item.classList.remove('show');
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 500);
+                }
             }
         });
 
@@ -237,12 +338,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('active');
             }
         });
+
+        // Toggle "See More" button container visibility (only if more matching items than visibleLimit)
+        const totalMatchingItems = Array.from(portfolioItems).filter(item => {
+            if (filterValue === 'all') return true;
+            return item.getAttribute('data-category') === filterValue;
+        }).length;
+
+        if (seeMoreContainer) {
+            if (totalMatchingItems > visibleLimit) {
+                seeMoreContainer.style.display = 'block';
+                // Trigger reflow
+                seeMoreContainer.offsetHeight;
+                seeMoreContainer.style.opacity = '1';
+            } else {
+                seeMoreContainer.style.opacity = '0';
+                setTimeout(() => {
+                    seeMoreContainer.style.display = 'none';
+                }, 400);
+            }
+        }
     }
 
     // Direct clicks on portfolio filter buttons
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             const filterValue = button.getAttribute('data-filter');
+            visibleLimit = 6; // Reset page size limit on filter change
             filterPortfolio(filterValue);
         });
     });
@@ -252,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const filterValue = link.getAttribute('data-footer-filter');
+            visibleLimit = 6; // Reset page size limit on filter change
             filterPortfolio(filterValue);
 
             const portfolioSection = document.getElementById('portfolio');
@@ -260,6 +383,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // See More click event handler
+    if (seeMoreBtn) {
+        seeMoreBtn.addEventListener('click', () => {
+            visibleLimit += 6; // Load next batch of 6 items
+            
+            // Get active category filter
+            const activeFilterBtn = Array.from(filterButtons).find(btn => btn.classList.contains('active'));
+            const currentFilter = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
+            
+            filterPortfolio(currentFilter);
+        });
+    }
 
     /* ==========================================================================
        5. INTERACTIVE LIGHTBOX MODAL WITH KEYBOARD NAVIGATION
@@ -272,25 +408,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxPrev = document.getElementById('lightboxPrev');
     const lightboxNext = document.getElementById('lightboxNext');
 
-    let activeItems = []; // Contains current visible portfolio items
-    let currentIdx = 0;   // Index of current image in activeItems
+    function setupLightboxCardListeners() {
+        const cards = document.querySelectorAll('.portfolio-card');
+        cards.forEach((card) => {
+            card.addEventListener('click', () => {
+                // Gather only items currently visible based on active filter
+                activeItems = Array.from(portfolioItems).filter(item => item.style.display !== 'none');
 
-    // Open Lightbox
-    const triggers = document.querySelectorAll('.btn-lightbox-trigger');
-    triggers.forEach((trigger) => {
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
+                // Find parent item clicked
+                const parentItem = card.closest('.portfolio-item');
+                currentIdx = activeItems.indexOf(parentItem);
 
-            // Gather only items currently visible based on active filter
-            activeItems = Array.from(portfolioItems).filter(item => item.style.display !== 'none');
-
-            // Find parent item clicked
-            const parentItem = trigger.closest('.portfolio-item');
-            currentIdx = activeItems.indexOf(parentItem);
-
-            openLightbox(activeItems[currentIdx]);
+                openLightbox(activeItems[currentIdx]);
+            });
         });
-    });
+    }
 
     function openLightbox(item) {
         if (!item) return;
@@ -637,6 +769,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch global bookings and sync
     fetchGlobalBookedSlots();
+
+    // Initialize portfolio display on startup
+    loadPortfolio();
 
     // Initial slots check
     if (bookingDateInput && bookingDateInput.value) {

@@ -1757,7 +1757,7 @@ button {
 }
 
 .portfolio-item {
-    grid-column: span 6;
+    grid-column: span 4; /* Uniform 3-column layout on desktop (12 columns total / 4 = 3 per row) */
     display: none;
     opacity: 0;
     transform: scale(0.95) translateY(20px);
@@ -1771,43 +1771,6 @@ button {
     transform: scale(1) translateY(0);
 }
 
-/* Asymmetric editorial layouts */
-.portfolio-item.featured-grid {
-    grid-column: span 8;
-}
-
-.portfolio-item:nth-child(2) {
-    grid-column: span 4;
-    margin-top: 3.5rem;
-}
-
-.portfolio-item:nth-child(3) {
-    grid-column: span 5;
-}
-
-.portfolio-item:nth-child(4) {
-    grid-column: span 7;
-    margin-top: -4rem;
-}
-
-.portfolio-item:nth-child(5) {
-    grid-column: span 6;
-}
-
-.portfolio-item:nth-child(6).featured-grid {
-    grid-column: span 6;
-    margin-top: 2rem;
-}
-
-.portfolio-item:nth-child(7) {
-    grid-column: span 4;
-}
-
-.portfolio-item:nth-child(8) {
-    grid-column: span 8;
-    margin-top: -3.5rem;
-}
-
 @media (max-width: 900px) {
     .portfolio-grid {
         display: flex;
@@ -1815,10 +1778,8 @@ button {
         gap: 2.2rem;
     }
 
-    .portfolio-item,
-    .portfolio-item:nth-child(n) {
+    .portfolio-item {
         grid-column: span 12 !important;
-        margin-top: 0 !important;
     }
 }
 
@@ -1827,26 +1788,9 @@ button {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 2; /* Uniform aspect ratio for all cards */
     border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Specific aspect ratios for staggered look */
-.portfolio-item:nth-child(even) .portfolio-card {
-    aspect-ratio: 4 / 5;
-}
-
-.portfolio-item.featured-grid .portfolio-card {
-    aspect-ratio: 16 / 10;
-}
-
-@media (max-width: 900px) {
-
-    .portfolio-card,
-    .portfolio-item:nth-child(even) .portfolio-card,
-    .portfolio-item.featured-grid .portfolio-card {
-        aspect-ratio: 1 / 1 !important;
-    }
+    cursor: pointer;
 }
 
 .portfolio-img {
